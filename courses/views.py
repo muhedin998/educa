@@ -3,7 +3,7 @@ from types import NoneType
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Course, Module
+from .models import Content, Course, Module
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
@@ -34,6 +34,24 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
         if id:
             self.obj = get_object_or_404(Module,id=module_id,course__owner=request.user)
         return super().dispatch(request,module_id,model_name,id)
+    
+    def get(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj)
+        return self.render_to_response({'form': form,
+        'object': self.obj})
+
+
+    def post(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.owner = request.user
+            obj.save()
+            if not id:
+                Content.objects.create(module=self.module, item=obj)
+            return redirect('module_content_list', self.module.id)
+        return self.render_to_response({'form':form, 'object':self.obj})
+
 
 class OwnerMixin(object):
     def get_queryset(self):
