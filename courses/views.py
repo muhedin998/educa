@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
 from .forms import ModuleFormSet
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, UpdateView,DeleteView
 
 class OwnerMixin(object):
     def get_queryset(self):
@@ -27,7 +29,7 @@ class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
 
 class ManageCourseListView(OwnerCourseMixin, ListView):
     template_name = 'courses/manage/course/list.html'
-    permission_required = 'course.view_course'
+    permission_required = 'courses.view_course'
 
 class CourseCreateView(OwnerCourseEditMixin, CreateView):
     permission_required = 'courses.add_course'

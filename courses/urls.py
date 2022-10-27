@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
         name='course_delete'),
     path('<pk>/module/', views.CourseModuleUpdateView.as_view(),
         name='course_module_update'),
+
 ]
